@@ -4,9 +4,9 @@ A repository for my Master's Thesis (**"Prediction of Overall and Differential T
 ### The final approved and official version of my Master's thesis can be found here: https://tspace.library.utoronto.ca/handle/1807/103790
 
 # Table of Contents
-* [Description]
-* [Files in Repo/Usage]
-* [Abstract/Brief Summary of Results]
+* [Description](https://github.com/michaelcarnovale/MA-Thesis#description)
+* [Files in Repo/Usage](https://github.com/michaelcarnovale/MA-Thesis#files-in-this-repo-and-usage)
+* [Abstract/Brief Summary of Results](https://github.com/michaelcarnovale/MA-Thesis#abstractbrief-summary)
 # Description
 The Master's thesis was concerned with the following research questions:
 1. Using machine learning models, to what degree of accuracy can we predict overall treatment response in patients receiving either psychotherapy or medication for depression?
