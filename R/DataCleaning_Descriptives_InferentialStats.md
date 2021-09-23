@@ -4,18 +4,20 @@ using Multi-Study Data
 ================
 Michael Carnovale
 
-This markdown file involves the following analyses steps: \* Data
-Cleaning \* Descriptive Statistics \* Preliminary Inferential Statistics
-\* Correlations between pre- and post-treatment depression scores \*
-Mean-level change in depression scores through treatment \* Self-report
-and clinician-rated agreement for pre- and post-treatment depression
-scores \* Correlations between personality facets and
-self-report/clinician-rated depression scores \* Correlation matrix of
-personality facets \* Regression models estimating treatment effects
+This markdown file involves the following analyses steps: 
+* Data cleaning 
+* Descriptive statistics 
+* Preliminary inferential statistics
+  * Correlations between pre- and post-treatment depression scores 
+  * Mean-level change in depression scores through treatment 
+  * Self-report and clinician-rated agreement for pre- and post-treatment depression scores 
+  * Correlations between personality facets and self-report/clinician-rated depression scores 
+  * Correlation matrix of personality facets 
+  * Regression models estimating treatment effects
 
-Note: for an easier navigation of the sections in this Markdown file,
+**Note: for an easier navigation of the sections in this Markdown file,
 please click the ‘bullet point’ button at the top-left of the viewer to
-see a table of contents.
+see a table of contents.**
 
 # Load required packages
 
