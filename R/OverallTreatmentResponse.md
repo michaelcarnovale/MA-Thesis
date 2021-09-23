@@ -6,9 +6,9 @@ Michael Carnovale
 
 This markdown file involves the following analyses steps: 
 * For BDI-II and HAM-D scores separately 
-  * Estimating predictive accuracy using
-series of OLS regression models (i.e., with subsets of IVs) on test data
-  * Estimating predictive accuracy using series of elastic net regression models (i.e., with same subset of IVs as in OLS) on test data
+  * Estimating predictive accuracy for overall treatment response using
+series of OLS regression models (i.e., with subsets of IVs) on test data 
+  * Estimating predictive accuracy for overall treatment response using series of elastic net regression models (i.e., with same subset of IVs as in OLS) on test data
 
 **Note: for an easier navigation of the sections in this Markdown file,
 please click the ‘bullet point’ button at the top-left of the viewer to
