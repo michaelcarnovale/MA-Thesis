@@ -1,13 +1,12 @@
 # Prediction of Overall and Differential Treatment Response for Depression using Personality Facets: Evaluating Multivariable Prediction Models using Multi-Study Data
-A repository for my Master's Thesis (**"Prediction of Overall and Differential Treatment Response for Depression using Personality Facets: Evaluating Multivariable Prediction Models using Multi-Study Data"**) defended for completion of my Master's degree in Clinical Psychology. This repo contains information regarding the actual background/results of my Master's Thesis and files related to its statistical analyses (i.e., R syntax, R Markdown, output). 
+A repository for my Master's Thesis (**"Prediction of Overall and Differential Treatment Response for Depression using Personality Facets: Evaluating Multivariable Prediction Models using Multi-Study Data"**) defended for completion of my Master's degree in Clinical Psychology. This repo contains information regarding the actual background/results of my Master's Thesis and files related to its statistical analyses (i.e., Markdown files with R syntax and output). 
 
 ### The final approved and official version of my Master's thesis can be found here: https://tspace.library.utoronto.ca/handle/1807/103790
-
 # Table of Contents
-* [Description](https://github.com/michaelcarnovale/MA-Thesis#description)
-* [Files in Repo/Usage](https://github.com/michaelcarnovale/MA-Thesis#files-in-this-repo-and-usage)
+* [Description and Methods](https://github.com/michaelcarnovale/MA-Thesis#description-and-methods)
+* [Files/Usage](https://github.com/michaelcarnovale/MA-Thesis#files-in-this-repo-and-usage)
 * [Abstract/Brief Summary of Results](https://github.com/michaelcarnovale/MA-Thesis#abstractbrief-summary)
-# Description
+# Description and Methods
 The Master's thesis was concerned with the following research questions:
 1. Using machine learning models, to what degree of accuracy can we predict overall treatment response in patients receiving either psychotherapy or medication for depression?
 2. Can we further develop good models to predict whether a given patient may respond better in one treatment vs the other (i.e., using counterfactual estimates)?
@@ -16,7 +15,7 @@ This project also involved analyzing data using the following methodologies:
 * Integrating data from multiple different clinical trials for depression
   * Data included self-reported personality traits and depression symptom severity (as rated through self-reports and clinician interviews)
 * Machine learning techniques and models
-  * Use of elastic net penalized regression to perform both variable/feature selection and prediction
+  * Use of elastic net penalized regression to perform both variable/feature selection and prediction (*caret* R package)
   * Use of global data partitioning (training, test) and repeated k-fold cross validation to estimate predictive accuracy
   * Comparisons with ordinary least squares regression models
   * Series of models containing various conceptual subsets of features/IVs
@@ -24,9 +23,12 @@ This project also involved analyzing data using the following methodologies:
   * Use of the Personalized Advantage Index (see [here](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6314923/) and [here](https://www.tandfonline.com/doi/abs/10.1080/10503307.2018.1563312) for published examples) methodology to construct and attempt to validate models for predicting differential treatment response - that is, which treatment works best for whom?
 
 # Files in this Repo and Usage
-* [.html file](https://github.com/michaelcarnovale/MA-Thesis/blob/main/Carnovale%20-%20MA%20thesis.html) 
-  * An exported R Markdown file that, once downloaded and opened, presents both the R syntax and R output for the main analyses described above. 
-  
+* [R folder](R/) - contains rendered R Markdown syntax and output viewable on GitHub
+  * [Data Cleaning, Descriptives, and Inferential Stats R Markdown](R/DataCleaning_Descriptives_InferentialStats.md)
+  * [Overall Treatment Response R Markdown](R/OverallTreatmentResponse.md)
+  * [Differential Treatment Response R Markdown](R/DifferentialTreatmentResponse.md)
+
+*Note: Unforuntately the data cannot be made available due to privacy issues.* 
 
 # Abstract/Brief Summary
 _The potential utility of self-reported personality in the context of a ‘personalized
