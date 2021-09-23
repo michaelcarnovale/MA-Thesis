@@ -38,7 +38,7 @@ library(boot)    ## Bootstrapping
     ##     "6.0-86"      "3.3.4"    "0.20-41"
 
 
-## Functions
+# Functions
 
 ``` r
 ## Best model function 
@@ -182,7 +182,7 @@ elastic.net = function(data, zscored.ivs, outcome){
 }
 ```
 
-## BDI-II scores
+# BDI-II scores
 
 ``` r
 ## Splitting data into training and test sets
@@ -202,7 +202,7 @@ nrow(bdi.overall.test)
 
     ## [1] 61
 
-### Ordinary least squares
+## Ordinary least squares
 
 ``` r
 #### Pre-tx BDI-II only
@@ -534,7 +534,7 @@ postResample(pred.bdi.ov.lm5.test, bdi.overall.test$BDI2.2)
     ##        RMSE    Rsquared         MAE 
     ## 12.08507660  0.02454955  9.39852547
 
-### Elastic net regression
+## Elastic net regression
 
 ``` r
 #### Standardizing IVs
