@@ -35,19 +35,6 @@ library(summarytools)
 library(boot)    ## Bootstrapping
 ```
 
-<style>
-pre {
-  overflow-x: auto;
-}
-pre code {
-  word-wrap: normal;
-  white-space: pre;
-}
-</style>
-
-<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;">
-
-</div>
 
     ##         boot summarytools       glmnet       Matrix       jtools       visreg 
     ##     "1.3-25"      "0.9.6"        "4.0"     "1.2-18"      "2.1.3"      "2.7.0" 
