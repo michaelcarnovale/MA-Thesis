@@ -818,7 +818,7 @@ postResample(pred.bdi.ov.enr4.test, bdi.overall.test$BDI2.2)
     ##      RMSE  Rsquared       MAE 
     ## 9.4222274 0.1403064 7.7407666
 
-## HAM-D scores
+# HAM-D scores
 
 ``` r
 ## Splitting data into training and test sets
@@ -838,7 +838,7 @@ nrow(hd.overall.test)
 
     ## [1] 96
 
-### Ordinary least squares
+## Ordinary least squares
 
 ``` r
 #### Pre-tx HAM-D only
@@ -1178,7 +1178,7 @@ postResample(pred.hd.ov.lm5.test, hd.overall.test$hamd2)
     ##       RMSE   Rsquared        MAE 
     ## 7.87687142 0.05765388 6.37990483
 
-### Elastic net regression
+## Elastic net regression
 
 ``` r
 #### Standardizing IVs
