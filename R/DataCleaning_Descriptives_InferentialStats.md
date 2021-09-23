@@ -1,6 +1,21 @@
-Descriptives and Inferential
+Prediction of Overall and Differential Treatment Response for Depression
+using Personality Facets: Evaluating Multivariable Prediction Models
+using Multi-Study Data
 ================
 Michael Carnovale
+
+This markdown file involves the following analyses steps: \* Data
+Cleaning \* Descriptive Statistics \* Preliminary Inferential Statistics
+\* Correlations between pre- and post-treatment depression scores \*
+Mean-level change in depression scores through treatment \* Self-report
+and clinician-rated agreement for pre- and post-treatment depression
+scores \* Correlations between personality facets and
+self-report/clinician-rated depression scores \* Correlation matrix of
+personality facets \* Regression models estimating treatment effects
+
+Note: for an easier navigation of the sections in this Markdown file,
+please click the ‘bullet point’ button at the top-left of the viewer to
+see a table of contents.
 
 # Load required packages
 
@@ -1523,7 +1538,8 @@ spearman(neo.depr.full, x = "hamd1", y = "BDI2.2", xlab = "HAM-D Pre", ylab = "B
     ## Calculations and Intervals on Original Scale
 
 ![](DataCleaning_Descriptives_InferentialStats_files/figure-gfm/unnamed-chunk-13-4.png)<!-- -->
-\#\# Correlations between each FFM facet and BDI-II scores
+
+## Correlations between each FFM facet and BDI-II scores
 
 ``` r
 print(corr.test(neo.depr.bdi[,c(1:30)], neo.depr.bdi[,c(31:32)], method = "spearman", ci = T, alpha = .001), short = F)
