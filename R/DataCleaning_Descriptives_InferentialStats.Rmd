@@ -1,0 +1,344 @@
+---
+title: "Descriptives and Inferential"
+author: "Michael Carnovale"
+date: 
+output: github_document
+---
+# Load required packages
+
+```{r, message = F, warning = F}
+
+library(caret)   ## Package to help with machine learning functions
+library(psych)   ## Descriptive stats and reliability statistics
+library(dplyr)   ## Data management
+library(car)     ## More data management
+library(foreign) ## To import datasets
+library(effsize) ## Effect sizes with CIs
+library(visreg)  ## Visualization of regression models
+library(jtools)  ## Various functions for regression models
+library(glmnet)  ## Penalized regression package
+library(summarytools)
+library(boot)    ## Bootstrapping
+
+```
+
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+</style>
+
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div> 
+
+
+
+```{r, echo = F}
+
+installed.packages()[names(sessionInfo()$otherPkgs), "Version"]
+
+```
+
+
+```{r, include = F}
+
+###################### Import data #######################################
+neo.depr.1 = read.spss("C:\\Users\\Michael Carnovale\\Documents\\UTSC Clinical Psych\\MA Thesis\\Data\\NEO & Depr tx, dataset 1.sav", 
+                       to.data.frame = T)
+
+neo.depr.2 = read.spss("C:\\Users\\Michael Carnovale\\Documents\\UTSC Clinical Psych\\MA Thesis\\Data\\See Change Data for Mike.sav", 
+                       to.data.frame = T)
+
+
+
+```
+
+# Data management
+
+```{r}
+# Subset variables (FFM facets, time 1 and 2 HAMD/BDI-II sum scores, treatment group, age, sex)
+neo.depr.1 = neo.depr.1[,c(252:281, 642, 647, 652, 653, 1, 7, 4, 5)]
+neo.depr.2 = neo.depr.2[,c(9:38, 84, 90, 79, 82, 98, 7, 8)]
+
+names(neo.depr.1)
+names(neo.depr.2)
+
+# Cut down to participants in only the first three studies in the first dataset 
+neo.depr.1 = subset(neo.depr.1, ccode == "UPC" | ccode == "NPL" | ccode == "OMHF")
+
+# Renaming variables in second dataset to match the variable names in first dataset
+depr.1.names = colnames(neo.depr.1[c(1:34, 36:38)])
+names(neo.depr.2) = depr.1.names
+
+# Adding in study code for second dataset 
+neo.depr.2$ccode = "Quilty et al."
+neo.depr.2$ccode = as.factor(neo.depr.2$ccode)
+
+# Rescoring FFM facets in Quilty et al.
+ffm.names = names(neo.depr.2[,c(1:30)])
+
+better.ffm = neo.depr.2[,c(ffm.names)] - 4
+
+neo.depr.2 = neo.depr.2[,c(31:38)]
+neo.depr.2 = cbind(better.ffm, neo.depr.2)
+
+# Combining both datasets into one for descriptive statistics
+neo.depr.full = rbind(neo.depr.1, neo.depr.2)
+neo.depr.full$txgrp = droplevels(neo.depr.full$txgrp)
+neo.depr.full$ccode = droplevels(neo.depr.full$ccode)
+neo.depr.1$txgrp = droplevels(neo.depr.1$txgrp)
+neo.depr.2$txgrp = droplevels(neo.depr.2$txgrp)
+neo.depr.1$ccode = droplevels(neo.depr.1$ccode)
+neo.depr.2$ccode = droplevels(neo.depr.2$ccode)
+
+# Taking out participants who did ipt
+table(neo.depr.full$txgrp) # 45 participants
+neo.depr.full = subset(neo.depr.full, txgrp == "cbt" | txgrp == "med")
+neo.depr.full$txgrp = droplevels(neo.depr.full$txgrp)
+
+
+# Recoding sex variable
+neo.depr.full$P121 = neo.depr.full$P121 - 1
+neo.depr.full$P121 = as.factor(neo.depr.full$P121)
+
+
+# Recoding treatment variable
+neo.depr.full$txgrp = as.numeric(neo.depr.full$txgrp)
+neo.depr.full$txgrp = neo.depr.full$txgrp - 1 # 0 = cbt, 1 = meds
+
+
+# Renaming variables in full dataset
+neo.depr.full = rename(neo.depr.full, sex = P121, hamd1 = HD_17.1, hamd2 = HD_17.2)
+
+
+```
+
+## Making separate datasets
+```{r}
+neo.depr.cbt = subset(neo.depr.full, txgrp==0) # CBT participants only
+neo.depr.med = subset(neo.depr.full, txgrp==1) # Med participants only
+
+neo.depr.cbt.bdi = neo.depr.cbt[, c(1:30, 33:38)] # CBT participants with BDI-II data
+neo.depr.med.bdi = neo.depr.med[, c(1:30, 33:38)] # Med participants with BDI-II data
+
+neo.depr.cbt.hd = neo.depr.cbt[, c(1:32, 35:38)] # CBT participants with HAM-D data
+neo.depr.med.hd = neo.depr.med[, c(1:32, 35:38)] # Med participants with HAM-D data
+
+neo.depr.bdi = neo.depr.full[,c(1:30, 33:38)] # Participants with BDI-II data, across txgrp
+neo.depr.hd = neo.depr.full[,c(1:32, 35:38)] # Participants with HAM-D data, across txgrp
+
+```
+
+## Handling missing data
+```{r}
+# Checking for NAs
+colSums(is.na(neo.depr.full)) # Number of NAs per variable in full data
+describeBy(neo.depr.full$BDI2.1, group = neo.depr.full$ccode) # First study didn't have any BDI-II data from participants
+
+
+# Listwise deletion first
+neo.depr.cbt.bdi = na.omit(neo.depr.cbt.bdi) 
+neo.depr.cbt.hd = na.omit(neo.depr.cbt.hd)
+neo.depr.med.bdi = na.omit(neo.depr.med.bdi)
+neo.depr.med.hd = na.omit(neo.depr.med.hd)
+
+neo.depr.bdi = na.omit(neo.depr.bdi)
+neo.depr.hd = na.omit(neo.depr.hd)
+
+```
+
+
+# Descriptive stats
+## Full sample before listwise deletion
+```{r}
+## Sample size
+table(neo.depr.full$ccode)
+
+## Tx group, and tx by study
+table(neo.depr.full$txgrp)
+table(neo.depr.full$ccode, neo.depr.full$txgrp) 
+
+```
+## Participants with full BDI-II data
+```{r}
+## Sample size
+nrow(neo.depr.bdi)
+
+## Study
+table(neo.depr.bdi$ccode)
+
+## Tx group
+table(neo.depr.bdi$txgrp)
+table(neo.depr.bdi$ccode, neo.depr.bdi$txgrp)
+
+## Sex
+freq(neo.depr.bdi$sex)
+
+## Age
+describe(neo.depr.bdi$age, quant = c(.25, .75))
+hist(neo.depr.bdi$age)
+densityPlot(neo.depr.bdi$age)
+describeBy(neo.depr.bdi$age, group = neo.depr.bdi$ccode, quant = c(.25, .75)) # By study
+
+## FFM facets
+describe(neo.depr.bdi[,c(1:30)], quant = c(.25, .75))
+describeBy(neo.depr.bdi[,c(1:30)], group = neo.depr.bdi$ccode, quant = c(.25, .75)) # By study
+ffm.names = names(neo.depr.bdi[,c(1:30)])
+for(i in 1:30){
+  hist(neo.depr.bdi[,i], xlab = ffm.names[i], main = ffm.names[i])
+  densityPlot(neo.depr.bdi[,i], xlab = ffm.names[i], main = ffm.names[i])
+}
+
+
+## Time 1 and Time 2 BDI-II
+describe(neo.depr.bdi$BDI2.1, quant = c(.25, .75)) # Pre-tx
+hist(neo.depr.bdi$BDI2.1)
+densityPlot(neo.depr.bdi$BDI2.1)
+describe(neo.depr.bdi$BDI2.2, quant = c(.25, .75)) # Post-tx
+hist(neo.depr.bdi$BDI2.2)
+densityPlot(neo.depr.bdi$BDI2.2)
+
+describeBy(neo.depr.bdi$BDI2.1, group = neo.depr.bdi$ccode, quant = c(.25, .75))
+describeBy(neo.depr.bdi$BDI2.2, group = neo.depr.bdi$ccode, quant = c(.25, .75))
+
+
+```
+
+## Participants with full HAM-D data
+```{r}
+## Sample size
+nrow(neo.depr.hd)
+
+## Study
+table(neo.depr.hd$ccode)
+
+## Tx group
+table(neo.depr.hd$txgrp)
+table(neo.depr.hd$ccode, neo.depr.hd$txgrp)
+
+## Sex
+freq(neo.depr.hd$sex)
+
+## Age
+describe(neo.depr.hd$age, quant = c(.25, .75))
+hist(neo.depr.hd$age)
+densityPlot(neo.depr.hd$age)
+describeBy(neo.depr.hd$age, group = neo.depr.hd$ccode, quant = c(.25, .75))
+
+## FFM facets
+describe(neo.depr.hd[,c(1:30)], quant = c(.25, .75))
+describeBy(neo.depr.hd[,c(1:30)], group = neo.depr.hd$ccode, quant = c(.25, .75))
+for(i in 1:30){
+  hist(neo.depr.hd[,i], xlab = ffm.names[i], main = ffm.names[i])
+  densityPlot(neo.depr.hd[,i], xlab = ffm.names[i], main = ffm.names[i])
+}
+
+## Time 1 and Time 2 HAM-D
+describe(neo.depr.hd$hamd1, quant = c(.25, .75)) # Pre-tx
+hist(neo.depr.hd$hamd1)
+densityPlot(neo.depr.hd$hamd1)
+describe(neo.depr.hd$hamd2, quant = c(.25, .75)) # Post-tx
+hist(neo.depr.hd$hamd2)
+densityPlot(neo.depr.hd$hamd2)
+
+describeBy(neo.depr.hd$hamd1, group = neo.depr.hd$ccode, quant = c(.25, .75))
+describeBy(neo.depr.hd$hamd2, group = neo.depr.hd$ccode, quant = c(.25, .75))
+
+```
+# Preliminary inferential statistics
+## Functions
+```{r}
+# Functions for bootstrapping Spearman's correlations for CIs
+
+spearman.boot = function(data, indices, x, y){
+  d = data[indices, ]
+  cor = cor.test(d[,c(x)], d[,c(y)], method = "spearman")$estimate # Getting the r estimate
+  return(cor)
+}
+
+spearman = function(data, x, y, xlab, ylab){
+  cor.out = cor.test(data[,c(x)], data[,c(y)], method = "spearman")
+  print(cor.out) # Print the actual esimate and p-value
+  set.seed(2020)
+  boot = boot(data, statistic = spearman.boot, R = 1000, x = x, y = y) %>% boot.ci(type = "bca")
+  print(boot) # Print BCa CIs
+  scatter.hist(data[,c(x)], data[,c(y)], method = "spearman", ellipse = F, ab = T, xlab = xlab, ylab = ylab)
+}
+
+# Function for paired t-tests and bootstrapping CIs for cohen's dz
+
+cohen.dz.boot = function(data, indices, t1, t2, n){
+  d = data[indices, ]
+  statistic = t.test(d[,c(t1)], d[,c(t2)])$statistic
+  dz = sqrt(statistic/n) # Cohen's dz 
+  return(dz)
+}
+
+paired = function(data, t1, t2, n){
+  test = t.test(data[,c(t1)], data[,c(t2)], paired = T)
+  print(test)
+  statistic = test$statistic
+  dz = sqrt(statistic/n)
+  print(dz)
+  set.seed(2020)
+  boot = boot(data, statistic = cohen.dz.boot, R = 1000, t1 = t1, t2 = t2, n = n) %>% boot.ci(type = "bca")
+  print(boot) # Bootstrapped cohen's dz
+}
+
+```
+## Rank-order correlation between pre- and post-tx depression scores
+```{r, warning = F}
+spearman(neo.depr.bdi, x = "BDI2.1", y = "BDI2.2", xlab = "BDI-II Pre", ylab = "BDI-II Post")
+spearman(neo.depr.full, x = "hamd1", y = "hamd2", xlab = "HAM-D Pre", ylab = "HAM-D Post")
+
+```
+
+## Mean-level change in depression scores from pre-tx to post-tx
+```{r, warning = F}
+# Across treatment type
+paired(data = neo.depr.bdi, t1 = "BDI2.1", t2 = "BDI2.2", n = 208)
+paired(data = neo.depr.hd, t1 = "hamd1", t2 = "hamd2", n = 325)
+
+```
+## Self-interview agreement between pre- and post-tx depression scores
+```{r, warning = F}
+spearman(neo.depr.full, x = "BDI2.1", y = "hamd1", xlab = "BDI-II Pre", ylab = "HAM-D Pre")
+spearman(neo.depr.full, x = "BDI2.2", y = "hamd2", xlab = "BDI-II Post", ylab = "HAM-D Post")
+
+spearman(neo.depr.full, x = "BDI2.1", y = "hamd2", xlab = "BDI-II Pre", ylab = "HAM-D Post")
+spearman(neo.depr.full, x = "hamd1", y = "BDI2.2", xlab = "HAM-D Pre", ylab = "BDI-II Post")
+
+```
+## Correlations between each FFM facet and BDI-II scores
+```{r, warning = F}
+print(corr.test(neo.depr.bdi[,c(1:30)], neo.depr.bdi[,c(31:32)], method = "spearman", ci = T, alpha = .001), short = F)
+
+```
+## Correlations between each FFM facet and HAM-D scores
+```{r, warning = F}
+print(corr.test(neo.depr.hd[,c(1:30)], neo.depr.hd[,c(31:32)], method = "spearman", ci = T, alpha = .001), short = F)
+
+```
+## Correlation matrix of FFM facets
+```{r, warning = F}
+# BDI-II participants
+corr.test(neo.depr.bdi[,c(1:30)], method = "spearman")$r %>% round(2)
+
+# HAM-D participants
+corr.test(neo.depr.hd[,c(1:30)], method = "spearman")$r %>% round(2)
+
+
+```
+## Treatment effects
+```{r}
+# BDI-II scores
+lm(BDI2.2 ~ BDI2.1 + txgrp, data = neo.depr.bdi) %>% summ(conf = T, robust = T, digits = 3)
+
+# HAM-D scores
+lm(hamd2 ~ hamd1 + txgrp, data = neo.depr.hd) %>% summ(conf = T, robust = T, digits = 3)
+
+```
